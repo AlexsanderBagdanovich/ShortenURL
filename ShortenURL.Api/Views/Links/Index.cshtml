@@ -1,0 +1,77 @@
+﻿@model List<ShortenURL.Domain.ShortLink>
+
+@{
+    ViewData["Title"] = "Shorten URL";
+    Layout = "_Layout";
+}
+
+<h2>Shorten URL</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div style="color:red; margin-bottom:15px;">
+        @TempData["Error"]
+    </div>
+}
+
+<form asp-action="Create" method="post" style="margin-bottom:20px;">
+    <input type="text"
+           name="originalUrl"
+           placeholder="https://example.com"
+           style="width:400px;"
+           required />
+    <button type="submit" class="btn btn-primary">
+        Create
+    </button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Long URL</th>
+            <th>Short URL</th>
+            <th>Created</th>
+            <th>Clicks</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="max-width:300px; word-break:break-all;">
+                    @item.OriginalUrl
+                </td>
+                <td>
+                    <a href="/r/@item.Code" target="_blank">
+                        @($"{Context.Request.Scheme}://{Context.Request.Host}/r/{item.Code}")
+                    </a>
+                </td>
+                <td>
+                    @item.CreatedAt.ToLocalTime()
+                </td>
+                <td>
+                    @item.ClickCount
+                </td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-primary">
+                        Edit
+                    </a>
+
+                    <form asp-action="Delete"
+                          asp-route-id="@item.Id"
+                          method="post"
+                          style="display:inline;">
+                        <button type="submit"
+                                class="btn btn-danger"
+                                onclick="return confirm('Delete this link?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
